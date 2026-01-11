@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 石头剪刀布链游 - Web3游戏</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+</head>
+<body>
+    <!-- 赛博朋克侧边装饰元素 -->
+    <div class="cyber-deco left">
+        <div class="deco-line"></div>
+        <div class="deco-dot"></div>
+        <div class="deco-text">SYSU</div>
+        <div class="deco-dot"></div>
+        <div class="deco-line"></div>
+    </div>
+    <div class="cyber-deco right">
+        <div class="deco-line"></div>
+        <div class="deco-dot"></div>
+        <div class="deco-text">区块链----石头剪刀布游戏</div>
+        <div class="deco-dot"></div>
+        <div class="deco-line"></div>
+    </div>
+
+    <!-- 烟花/鼓励动画容器 -->
+    <div id="fireworks-container"></div>
+    <div id="encourage-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="encourage-emoji">💸</div>
+            <h2>再接再厉，下把一定能赢！</h2>
+            <p class="loss-amount" id="lossDisplay"></p>
+            <p>失败是成功之母，下一局一定赢！</p>
+            <button onclick="closeEncourageModal()">继续挑战</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>⛓️ 石头剪刀布</h1>
+        <p class="subtitle">区块链公平对战 · 赢取ETH奖励</p>
+        
+        <!-- 钱包连接区 -->
+        <div class="wallet-bar">
+            <button id="connectBtn">🔗 连接钱包</button>
+            <div class="wallet-info-mini">
+                <span id="walletAddr">未连接</span>
+                <span id="walletBal">0 ETH</span>
+            </div>
+        </div>
+
+        <!-- 核心游戏区 -->
+        <div class="game-main">
+            <!-- 对战展示区 -->
+            <div class="battle-arena">
+                <div class="player-side">
+                    <div class="player-label">你的出拳</div>
+                    <div id="playerChoiceDisplay" class="choice-display">❓</div>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="ai-side">
+                    <div class="player-label">电脑出拳</div>
+                    <div id="aiChoiceDisplay" class="choice-display">❓</div>
+                </div>
+            </div>
+
+            <!-- 结果显示 -->
+            <div id="resultDisplay" class="result-display hidden"></div>
+
+            <!-- 三个出拳按钮 -->
+            <div class="choice-buttons">
+                <button class="choice-btn" data-choice="0" onclick="selectChoice(0)">
+                    <span class="choice-emoji">✊</span>
+                    <span class="choice-text">石头</span>
+                </button>
+                <button class="choice-btn" data-choice="1" onclick="selectChoice(1)">
+                    <span class="choice-emoji">✌️</span>
+                    <span class="choice-text">剪刀</span>
+                </button>
+                <button class="choice-btn" data-choice="2" onclick="selectChoice(2)">
+                    <span class="choice-emoji">🖐️</span>
+                    <span class="choice-text">布</span>
+                </button>
+            </div>
+
+            <!-- 投注和出拳 -->
+            <div class="action-area">
+                <div class="bet-row">
+                    <input type="number" id="betWei" placeholder="投注 wei" step="1" min="1" max="100000000000000000" value="1">
+                    <span class="eth-label">wei</span>
+                </div>
+                <input type="number" id="randomSalt" placeholder="随机盐值 (如: 123456)" class="salt-input">
+                <button id="fightBtn" class="fight-btn" disabled>👊 出拳对战！</button>
+            </div>
+
+            <!-- 游戏状态 -->
+            <div id="gameStatus" class="game-status"></div>
+        </div>
+
+        <!-- 战绩区 -->
+        <div class="record-bar">
+            <span id="recordShow">🏆 胜:0 | 😢 负:0 | 🤝 平:0</span>
+            <button id="queryRecordBtn" class="record-btn">刷新</button>
+        </div>
+
+        <p class="tip">💡 请确保在 Sepolia 测试网并有足够测试ETH</p>
+    </div>
+
+    <!-- 左侧提示面板 - 投注范围 -->
+    <div class="side-tip-panel left-tip">
+        <div class="tip-title">💰 投注范围</div>
+        <div class="tip-item">
+            <span class="tip-label">最小投注</span>
+            <span id="sideMinBet">连接钱包后显示</span>
+        </div>
+        <div class="tip-item">
+            <span class="tip-label">最大投注</span>
+            <span id="sideMaxBet">连接钱包后显示</span>
+        </div>
+        <div class="tip-note">单位: wei</div>
+    </div>
+
+    <!-- 右侧提示面板 - 游戏玩法 -->
+    <div class="side-tip-panel right-tip">
+        <div class="tip-title">🎮 游戏玩法</div>
+        <div class="tip-step">1️⃣ 连接 MetaMask 钱包</div>
+        <div class="tip-step">2️⃣ 选择出拳 (石头/剪刀/布)</div>
+        <div class="tip-step">3️⃣ 输入投注金额和盐值</div>
+        <div class="tip-step">4️⃣ 点击出拳对战</div>
+        <div class="tip-divider"></div>
+        <div class="tip-result">🏆 胜：获得双倍奖励</div>
+        <div class="tip-result">🤝 平：退还投注</div>
+        <div class="tip-result">😢 负：损失投注</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
