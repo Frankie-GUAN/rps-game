@@ -252,7 +252,6 @@ async function startGame() {
     }
     
     const fightBtn = document.getElementById("fightBtn");
-    const originalBtnText = fightBtn.innerText;
     
     // 按钮状态更新函数
     function updateBtnStatus(text) {
