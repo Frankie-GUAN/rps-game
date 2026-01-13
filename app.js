@@ -1,5 +1,5 @@
-// ======================== 你的专属配置 ========================
-const CONTRACT_ADDRESS = "0xb6Ea880874A6e920578a7EA8A712C5dFAC83569b"; // 你的合约地址
+// ======================== 配置 ========================
+const CONTRACT_ADDRESS = "0xb6Ea880874A6e920578a7EA8A712C5dFAC83569b"; // 合约地址
 const SEPOLIA_CHAIN_ID = 11155111; // Sepolia测试网链ID
 
 // ABI 将在页面加载时动态获取
@@ -356,7 +356,8 @@ async function startGame() {
             resultDisplay.innerText = "🤝 平局！已退款";
             updateGameStatus("🤝 平局！投注已全额退还");
             updateBtnStatus("🤝 平局");
-        } else if (isWin) {
+        } else if (!isWin) {
+            // 玩家获胜（isWin为false表示玩家赢）
             resultDisplay.classList.add('win');
             resultDisplay.innerText = "🎉 恭喜获胜！";
             updateGameStatus("🏆 恭喜获胜！获得双倍奖励");
@@ -364,6 +365,7 @@ async function startGame() {
             // 播放烟花动画
             playFireworks();
         } else {
+            // 玩家落败（isWin为true表示AI赢）
             resultDisplay.classList.add('lose');
             resultDisplay.innerText = `😢 很遗憾... -${betWei} wei`;
             updateBtnStatus("😢 落败");
